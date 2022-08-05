@@ -5,6 +5,7 @@ use crate::prelude::*;
 #[read_component(Name)]
 #[read_component(FieldOfView)]
 #[read_component(Player)]
+#[read_component(Health)]
 pub fn tooltips(ecs: &SubWorld, #[resource] mouse_pos: &Point, #[resource] camera: &Camera) {
     let mut positions = <(Entity, &Point, &Name)>::query();
     let mut fov = <&FieldOfView>::query().filter(component::<Player>());
@@ -21,9 +22,10 @@ pub fn tooltips(ecs: &SubWorld, #[resource] mouse_pos: &Point, #[resource] camer
         .filter(|(_, pos, _)| **pos == map_pos && player_fov.visible_tiles.contains(pos))
         .for_each(|(entity, _, name)| {
             let screen_pos = *mouse_pos * 4;
+
             let display =
                 if let Ok(health) = ecs.entry_ref(*entity).unwrap().get_component::<Health>() {
-                    format!("{} : {} hp", &name.0, health.current)
+                    format!("{} : {}/{} hp", &name.0, health.current, health.max)
                 } else {
                     name.0.clone()
                 };
