@@ -8,6 +8,7 @@ use crate::prelude::*;
 pub fn end_turn(
     ecs: &SubWorld,
     #[resource] turn_state: &mut TurnState,
+    #[resource] map: &Map,
 ) {
     let mut player_hp = <(&Health, &Point)>::query().filter(component::<Player>());
     let mut amulet = <&Point>::query().filter(component::<AmuletOfYala>());
@@ -29,8 +30,15 @@ pub fn end_turn(
         if hp.current < 1 {
             new_state = TurnState::GameOver;
         }
+
         if pos == amulet_pos {
             new_state = TurnState::Victory;
+        }
+
+        let idx = map.point2d_to_index(*pos);
+
+        if map.tiles[idx] == TileType::Exit {
+            new_state = TurnState::NextLevel;
         }
     });
 

@@ -7,7 +7,10 @@ pub struct Render {
     pub glyph: FontCharType,
 }
 
-pub struct Player;
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Player {
+    pub map_level: u32,
+}
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Enemy;
