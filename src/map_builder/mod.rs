@@ -8,7 +8,6 @@ mod themes;
 use crate::prelude::*;
 use automata::CellularAutomataArchitect;
 use drunkard::DrunkardsWalkArchitect;
-use empty::EmptyArchitect;
 use prefab::apply_prefab;
 use rooms::RoomsArchitect;
 use themes::*;
@@ -27,9 +26,9 @@ pub struct MapBuilder {
 impl MapBuilder {
     pub fn new(rng: &mut RandomNumberGenerator) -> Self {
         let mut architect: Box<dyn MapArchitect> = match rng.range(0, 3) {
-            0 => Box::new(DrunkardsWalkArchitect{}),
-            1 => Box::new(RoomsArchitect{}),
-            _ => Box::new(CellularAutomataArchitect{}),
+            0 => Box::new(DrunkardsWalkArchitect {}),
+            1 => Box::new(RoomsArchitect {}),
+            _ => Box::new(CellularAutomataArchitect {}),
         };
 
         let mut mb = architect.new(rng);
@@ -43,23 +42,25 @@ impl MapBuilder {
         mb
     }
 
-    fn spawn_monsters(
-        &self,
-        start: &Point,
-        rng: &mut RandomNumberGenerator,
-    ) -> Vec<Point> {
+    fn spawn_monsters(&self, start: &Point, rng: &mut RandomNumberGenerator) -> Vec<Point> {
         const NUM_MONSTERS: usize = 50;
 
-        let mut spawnable_tiles: Vec<Point> = self.map.tiles
+        let mut spawnable_tiles: Vec<Point> = self
+            .map
+            .tiles
             .iter()
             .enumerate()
-            .filter(|(idx, t)| **t == TileType::Floor && DistanceAlg::Pythagoras.distance2d(*start, self.map.index_to_point2d(*idx)) > 10.0)
+            .filter(|(idx, t)| {
+                **t == TileType::Floor
+                    && DistanceAlg::Pythagoras.distance2d(*start, self.map.index_to_point2d(*idx))
+                        > 10.0
+            })
             .map(|(idx, _)| self.map.index_to_point2d(idx))
             .collect();
 
         let mut spawns = Vec::new();
-        for _ in 0 .. NUM_MONSTERS {
-            let target_index = rng.random_slice_index(&spawnable_tiles) .unwrap();
+        for _ in 0..NUM_MONSTERS {
+            let target_index = rng.random_slice_index(&spawnable_tiles).unwrap();
 
             spawns.push(spawnable_tiles[target_index].clone());
             spawnable_tiles.remove(target_index);
@@ -90,7 +91,8 @@ impl MapBuilder {
                 .enumerate()
                 .filter(|(_, dist)| *dist < UNREACHABLE)
                 .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
-                .unwrap().0
+                .unwrap()
+                .0,
         )
     }
 
@@ -125,9 +127,9 @@ impl MapBuilder {
     }
 
     fn apply_vertical_tunnel(&mut self, y1: i32, y2: i32, x: i32) {
-        use std::cmp::{min, max};
+        use std::cmp::{max, min};
 
-        for y in min(y1, y2) ..= max(y1, y2) {
+        for y in min(y1, y2)..=max(y1, y2) {
             if let Some(idx) = self.map.try_index(Point::new(x, y)) {
                 self.map.tiles[idx as usize] = TileType::Floor;
             }
@@ -135,9 +137,9 @@ impl MapBuilder {
     }
 
     fn apply_horizontal_tunnel(&mut self, x1: i32, x2: i32, y: i32) {
-        use std::cmp::{min, max};
+        use std::cmp::{max, min};
 
-        for x in min(x1, x2) ..= max(x1, x2) {
+        for x in min(x1, x2)..=max(x1, x2) {
             if let Some(idx) = self.map.try_index(Point::new(x, y)) {
                 self.map.tiles[idx as usize] = TileType::Floor;
             }

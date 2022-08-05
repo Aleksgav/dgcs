@@ -2,11 +2,11 @@ use crate::prelude::*;
 
 use super::MapArchitect;
 
-pub struct EmptyArchitect{}
+pub struct EmptyArchitect {}
 
 impl MapArchitect for EmptyArchitect {
     fn new(&mut self, rng: &mut RandomNumberGenerator) -> MapBuilder {
-        let mut mb = MapBuilder{
+        let mut mb = MapBuilder {
             map: Map::new(),
             rooms: Vec::new(),
             monster_spawns: Vec::new(),
@@ -20,12 +20,10 @@ impl MapArchitect for EmptyArchitect {
         mb.amulet_start = mb.find_most_distant();
 
         for _ in 0..50 {
-            mb.monster_spawns.push(
-                Point::new(
-                    rng.range(1, SCREEN_WIDTH),
-                    rng.range(1, SCREEN_WIDTH)
-                )
-            )
+            mb.monster_spawns.push(Point::new(
+                rng.range(1, SCREEN_WIDTH),
+                rng.range(1, SCREEN_WIDTH),
+            ))
         }
 
         mb

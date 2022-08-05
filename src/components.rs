@@ -49,7 +49,7 @@ pub struct Item;
 pub struct AmuletOfYala;
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct FieldOfView{
+pub struct FieldOfView {
     pub visible_tiles: HashSet<Point>,
     pub radius: i32,
     pub is_dirty: bool,
