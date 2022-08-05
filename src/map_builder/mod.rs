@@ -62,7 +62,7 @@ impl MapBuilder {
         for _ in 0..NUM_MONSTERS {
             let target_index = rng.random_slice_index(&spawnable_tiles).unwrap();
 
-            spawns.push(spawnable_tiles[target_index].clone());
+            spawns.push(spawnable_tiles[target_index]);
             spawnable_tiles.remove(target_index);
         }
 
@@ -77,7 +77,7 @@ impl MapBuilder {
         let dijkstra_map = DijkstraMap::new(
             SCREEN_WIDTH,
             SCREEN_HEIGHT,
-            &vec![self.map.point2d_to_index(self.player_start)],
+            &[self.map.point2d_to_index(self.player_start)],
             &self.map,
             1024.0,
         );
@@ -166,6 +166,7 @@ impl MapBuilder {
 }
 
 trait MapArchitect {
+    #[allow(clippy::new_ret_no_self, clippy::wrong_self_convention)]
     fn new(&mut self, rng: &mut RandomNumberGenerator) -> MapBuilder;
 }
 

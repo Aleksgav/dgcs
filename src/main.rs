@@ -132,8 +132,8 @@ impl State {
     fn advance_level(&mut self) {
         let player_entity = *<Entity>::query()
             .filter(component::<Player>())
-            .iter(&mut self.ecs)
-            .nth(0)
+            .iter(&self.ecs)
+            .next()
             .unwrap();
 
         use std::collections::HashSet;
@@ -149,7 +149,7 @@ impl State {
                 entities_to_keep.insert(e);
             });
 
-        let mut cb = CommandBuffer::new(&mut self.ecs);
+        let mut cb = CommandBuffer::new(&self.ecs);
         for e in Entity::query().iter(&self.ecs) {
             if !entities_to_keep.contains(e) {
                 cb.remove(*e);
@@ -209,7 +209,7 @@ impl GameState for State {
         ctx.set_active_console(0);
         self.resources.insert(Point::from_tuple(ctx.mouse_pos()));
 
-        let current_state = self.resources.get::<TurnState>().unwrap().clone();
+        let current_state = *self.resources.get::<TurnState>().unwrap();
         match current_state {
             TurnState::AwaitingInput => self
                 .input_systems

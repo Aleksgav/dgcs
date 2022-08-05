@@ -70,7 +70,7 @@ impl Templates {
         commands: &mut legion::systems::CommandBuffer,
     ) {
         let entity = commands.push((
-            pt.clone(),
+            *pt,
             Render {
                 color: ColorPair::new(WHITE, BLACK),
                 glyph: to_cp437(template.glyph),

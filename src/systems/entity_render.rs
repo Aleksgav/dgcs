@@ -8,7 +8,7 @@ use crate::prelude::*;
 pub fn entity_render(#[resource] camera: &Camera, ecs: &SubWorld) {
     let mut renderables = <(&Point, &Render)>::query();
     let mut fov = <&FieldOfView>::query().filter(component::<Player>());
-    let player_fov = fov.iter(ecs).nth(0).unwrap();
+    let player_fov = fov.iter(ecs).next().unwrap();
 
     let mut draw_batch = DrawBatch::new();
     draw_batch.target(1);
@@ -17,7 +17,7 @@ pub fn entity_render(#[resource] camera: &Camera, ecs: &SubWorld) {
 
     renderables
         .iter(ecs)
-        .filter(|(pos, _)| player_fov.visible_tiles.contains(&pos))
+        .filter(|(pos, _)| player_fov.visible_tiles.contains(pos))
         .for_each(|(pos, render)| {
             draw_batch.set(*pos - offset, render.color, render.glyph);
         });
