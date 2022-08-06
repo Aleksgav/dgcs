@@ -6,6 +6,7 @@ use crate::prelude::*;
 #[read_component(Item)]
 #[read_component(Carried)]
 #[read_component(Name)]
+#[read_component(Damage)]
 pub fn hud(ecs: &SubWorld) {
     let mut health_query = <&Health>::query().filter(component::<Player>());
     let player_health = health_query.iter(ecs).next().unwrap();
@@ -27,7 +28,7 @@ pub fn hud(ecs: &SubWorld) {
         ColorPair::new(WHITE, RED),
     );
 
-    let (_player, map_level) = <(Entity, &Player)>::query()
+    let (player, map_level) = <(Entity, &Player)>::query()
         .iter(ecs)
         .map(|(entity, player)| (*entity, player.map_level))
         .next()
@@ -36,6 +37,18 @@ pub fn hud(ecs: &SubWorld) {
     draw_batch.print_color_right(
         Point::new(SCREEN_WIDTH * 2, 1),
         format!("Dungeon level: {}", map_level + 1),
+        ColorPair::new(YELLOW, BLACK),
+    );
+
+    let sword_damage: i32 = <(&Carried, &Damage)>::query()
+        .iter(ecs)
+        .filter(|(carried, _)| carried.0 == player)
+        .map(|(_, dmg)| dmg.0)
+        .sum();
+
+    draw_batch.print_color_right(
+        Point::new(SCREEN_WIDTH * 2, 2),
+        format!("Sword damage: {}", sword_damage + 1),
         ColorPair::new(YELLOW, BLACK),
     );
 
